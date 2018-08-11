@@ -16,22 +16,24 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class SensorRestRequest implements Callable<Map<String, Object>> {
-    final private String sensorEndpoint;
+    private static final String SENSOR_ENDPOINT = "http://192.168.1.27:8080/";
+    private static final RestTemplate REST_TEMPLATE = new RestTemplate();
 
-    SensorRestRequest(String sensorEndpoint) {
-        this.sensorEndpoint = sensorEndpoint;
+    private final String sensorName;
+
+    public SensorRestRequest(String sensorName) {
+        this.sensorName = sensorName;
     }
 
     @Override
     public Map<String, Object> call() {
-        RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        headers.add("Accept", "*/*");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        headers.add(HttpHeaders.ACCEPT, "*/*");
 
 
         HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-        ResponseEntity<String> responseEntity = rest.exchange("http://192.168.1.27:8080/" + sensorEndpoint, HttpMethod.GET, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = REST_TEMPLATE.exchange(SENSOR_ENDPOINT + sensorName, HttpMethod.GET, requestEntity, String.class);
         String responseEntityBody = responseEntity.getBody();
 
         ObjectMapper objectMapper = new ObjectMapper();
