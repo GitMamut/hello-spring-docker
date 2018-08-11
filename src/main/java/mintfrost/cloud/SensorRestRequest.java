@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class SensorRestRequest implements Callable<Map<String, Object>> {
+public class SensorRestRequest implements Callable<SensorResponse> {
     private static final String SENSOR_ENDPOINT = "http://192.168.1.27:8080/";
     private static final RestTemplate REST_TEMPLATE = new RestTemplate();
 
@@ -26,7 +26,7 @@ public class SensorRestRequest implements Callable<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> call() {
+    public SensorResponse call() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
         headers.add(HttpHeaders.ACCEPT, "*/*");
@@ -46,6 +46,7 @@ public class SensorRestRequest implements Callable<Map<String, Object>> {
             e.printStackTrace();
         }
 
-        return CollectionUtils.isEmpty(stringObjectList) ? Collections.emptyMap() : stringObjectList.get(0);
+        Map<String, Object> responseMap = CollectionUtils.isEmpty(stringObjectList) ? Collections.emptyMap() : stringObjectList.get(0);
+        return new SensorResponse(sensorName, responseMap);
     }
 }

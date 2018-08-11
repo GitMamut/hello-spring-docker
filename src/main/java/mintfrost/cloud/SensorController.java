@@ -14,7 +14,7 @@ public class SensorController {
     @ResponseBody
     public Map<String, Map<String, Object>> sensor(@PathVariable(value = "sensorEndpoint") String sensorEndpoint) {
         Map<String, Map<String, Object>> returnMap = new LinkedHashMap<>();
-        returnMap.put(sensorEndpoint, new SensorRestRequest(sensorEndpoint).call());
+        returnMap.put(sensorEndpoint, new SensorRestRequest(sensorEndpoint).call().getResponseMap());
         return returnMap;
     }
 }

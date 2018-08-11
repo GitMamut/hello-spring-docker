@@ -1,22 +1,21 @@
 package mintfrost.cloud.fetcher;
 
+import mintfrost.cloud.ApplicationConfiguration;
+import mintfrost.cloud.SensorResponse;
 import mintfrost.cloud.SensorRestRequest;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
 public class AllMeasurementsFetcherExecutorService implements MeasurementsFetcher {
-    private static final List<String> SENSOR_ENDPOINTS = Arrays.asList("currentOutdoor", "currentIndoor", "currentPressure");
 
 
     @Override
     public Map<String, Map<String, Object>> getMeasurements() {
-        final Map<String, Future<Map<String, Object>>> futureMap = new LinkedHashMap<>();
-        final ExecutorService executorService = Executors.newFixedThreadPool(SENSOR_ENDPOINTS.size());
-        for (String sensorEndpoint : SENSOR_ENDPOINTS) {
+        final Map<String, Future<SensorResponse>> futureMap = new LinkedHashMap<>();
+        final ExecutorService executorService = Executors.newFixedThreadPool(ApplicationConfiguration.SENSOR_ENDPOINTS.size());
+        for (String sensorEndpoint : ApplicationConfiguration.SENSOR_ENDPOINTS) {
             futureMap.put(sensorEndpoint, executorService.submit(new SensorRestRequest(sensorEndpoint)));
         }
 
@@ -28,11 +27,11 @@ public class AllMeasurementsFetcherExecutorService implements MeasurementsFetche
         }
 
         final Map<String, Map<String, Object>> returnMap = new LinkedHashMap<>();
-        for (Map.Entry<String, Future<Map<String, Object>>> stringFutureEntry : futureMap.entrySet()) {
+        for (Map.Entry<String, Future<SensorResponse>> stringFutureEntry : futureMap.entrySet()) {
             try {
-                Future<Map<String, Object>> requestResult = stringFutureEntry.getValue();
+                Future<SensorResponse> requestResult = stringFutureEntry.getValue();
                 if (requestResult.isDone()) {
-                    returnMap.put(stringFutureEntry.getKey(), requestResult.get());
+                    returnMap.put(stringFutureEntry.getKey(), requestResult.get().getResponseMap());
                 }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
