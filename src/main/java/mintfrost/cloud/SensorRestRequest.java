@@ -16,12 +16,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class SensorRestRequest implements Callable<SensorResponse> {
-    private static final String SENSOR_ENDPOINT = "http://192.168.1.27:8080/";
     private static final RestTemplate REST_TEMPLATE = new RestTemplate();
 
+    private final String sensorUrl;
     private final String sensorName;
 
-    public SensorRestRequest(String sensorName) {
+    public SensorRestRequest(String sensorUrl, String sensorName) {
+        this.sensorUrl = sensorUrl;
         this.sensorName = sensorName;
     }
 
@@ -33,7 +34,8 @@ public class SensorRestRequest implements Callable<SensorResponse> {
 
 
         HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-        ResponseEntity<String> responseEntity = REST_TEMPLATE.exchange(SENSOR_ENDPOINT + sensorName, HttpMethod.GET, requestEntity, String.class);
+        System.out.println("RQ: " + sensorUrl + sensorName);
+        ResponseEntity<String> responseEntity = REST_TEMPLATE.exchange(sensorUrl + sensorName, HttpMethod.GET, requestEntity, String.class);
         String responseEntityBody = responseEntity.getBody();
 
         ObjectMapper objectMapper = new ObjectMapper();

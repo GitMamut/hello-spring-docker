@@ -11,12 +11,19 @@ import java.util.concurrent.*;
 public class AllMeasurementsFetcherExecutorService implements MeasurementsFetcher {
 
 
+    private final String sensorUrl;
+
+    public AllMeasurementsFetcherExecutorService(String sensorUrl) {
+
+        this.sensorUrl = sensorUrl;
+    }
+
     @Override
     public Map<String, Map<String, Object>> getMeasurements() {
         final Map<String, Future<SensorResponse>> futureMap = new LinkedHashMap<>();
         final ExecutorService executorService = Executors.newFixedThreadPool(ApplicationConfiguration.SENSOR_ENDPOINTS.size());
         for (String sensorEndpoint : ApplicationConfiguration.SENSOR_ENDPOINTS) {
-            futureMap.put(sensorEndpoint, executorService.submit(new SensorRestRequest(sensorEndpoint)));
+            futureMap.put(sensorEndpoint, executorService.submit(new SensorRestRequest(sensorUrl, sensorEndpoint)));
         }
 
         try {

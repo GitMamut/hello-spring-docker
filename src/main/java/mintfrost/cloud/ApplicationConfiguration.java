@@ -3,6 +3,7 @@ package mintfrost.cloud;
 import mintfrost.cloud.fetcher.AllMeasurementsFetcherExecutorService;
 import mintfrost.cloud.fetcher.AllMeasurementsFetcherParallelStream;
 import mintfrost.cloud.fetcher.MeasurementsFetcher;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,14 +15,17 @@ public class ApplicationConfiguration {
 
     public static final List<String> SENSOR_ENDPOINTS = Arrays.asList("currentOutdoor", "currentIndoor", "currentPressure");
 
+    @Value("${sensorUrl}")
+    private String sensorUrl;
+
     @Bean
     MeasurementsFetcher allMeasurementsFetcherExecutorService() {
-        return new AllMeasurementsFetcherExecutorService();
+        return new AllMeasurementsFetcherExecutorService(sensorUrl);
     }
 
     @Bean
     MeasurementsFetcher allMeasurementsFetcherParallelStream() {
-        return new AllMeasurementsFetcherParallelStream();
+        return new AllMeasurementsFetcherParallelStream(sensorUrl);
     }
 
     @Bean

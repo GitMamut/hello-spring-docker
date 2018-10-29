@@ -10,11 +10,18 @@ import static mintfrost.cloud.ApplicationConfiguration.SENSOR_ENDPOINTS;
 
 public class AllMeasurementsFetcherParallelStream implements MeasurementsFetcher {
 
+    private final String sensorUrl;
+
+    public AllMeasurementsFetcherParallelStream(String sensorUrl) {
+
+        this.sensorUrl = sensorUrl;
+    }
+
     @Override
     public Map<String, Map<String, Object>> getMeasurements() {
         return SENSOR_ENDPOINTS.stream()
                 .parallel()
-                .map(SensorRestRequest::new)
+                .map(sensorName -> new SensorRestRequest(sensorUrl, sensorName))
                 .map(SensorRestRequest::call)
                 .collect(toMap(SensorResponse::getSensorName, SensorResponse::getResponseMap));
     }
