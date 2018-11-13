@@ -20,4 +20,10 @@ public class SensorsController {
     public Map<String, Map<String, Object>> sensors() {
         return allMeasurementsFetcher.getMeasurements();
     }
+
+    @RequestMapping("/common-sensors")
+    @ResponseBody
+    public CommonSensor commonSensors() {
+        return new CommonSensor();
+    }
 }
